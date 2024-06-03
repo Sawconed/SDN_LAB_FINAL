@@ -1,11 +1,11 @@
-import { dishes } from "../publics/data.js";
+const dishes = require("../publics/data").dishes;
 
-export const getDishes = (req, res) => {
+module.exports.getDishes = (req, res) => {
   const dishList = dishes;
   res.status(200).json(dishList);
 };
 
-export const getDishById = (req, res) => {
+module.exports.getDishById = (req, res) => {
   const { dishId } = req.params;
 
   const dish = dishes.find((dish) => dish.id === dishId);
@@ -17,7 +17,7 @@ export const getDishById = (req, res) => {
   }
 };
 
-export const createDish = (req, res) => {
+module.exports.createDish = (req, res) => {
   const { name, description } = req.body;
 
   const newDish = {
@@ -31,7 +31,7 @@ export const createDish = (req, res) => {
   res.status(201).json(newDish);
 };
 
-export const createDishWithId = (req, res) => {
+module.exports.createDishWithId = (req, res) => {
   const { dishId } = req.params;
 
   const isExist = dishes.find((dish) => dish.id === dishId);
@@ -53,7 +53,7 @@ export const createDishWithId = (req, res) => {
   }
 };
 
-export const updateDish = (req, res) => {
+module.exports.updateDish = (req, res) => {
   const { dishId } = req.params;
 
   const isExist = dishes.find((dish) => dish.id === dishId);
@@ -74,7 +74,7 @@ export const updateDish = (req, res) => {
   }
 };
 
-export const deleteDish = (req, res) => {
+module.exports.deleteDish = (req, res) => {
   const { dishId } = req.params;
 
   const isExist = dishes.findIndex((dish) => dish.id === dishId);

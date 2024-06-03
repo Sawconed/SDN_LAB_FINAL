@@ -1,11 +1,11 @@
-import { leaders } from "../publics/data.js";
+const leaders = require("../publics/data").leaders;
 
-export const getLeaders = (req, res) => {
+module.exports.getLeaders = (req, res) => {
   const leaderList = leaders;
   res.status(200).json(leaderList);
 };
 
-export const getLeaderById = (req, res) => {
+module.exports.getLeaderById = (req, res) => {
   const { leaderId } = req.params;
 
   const leader = leaders.find((leader) => leader.id === leaderId);
@@ -17,7 +17,7 @@ export const getLeaderById = (req, res) => {
   }
 };
 
-export const createLeader = (req, res) => {
+module.exports.createLeader = (req, res) => {
   const { name, description } = req.body;
 
   const newLeader = {
@@ -31,7 +31,7 @@ export const createLeader = (req, res) => {
   res.status(201).json(newLeader);
 };
 
-export const createLeaderWithId = (req, res) => {
+module.exports.createLeaderWithId = (req, res) => {
   const { leaderId } = req.params;
 
   const isExist = leaders.find((leader) => leader.id === leaderId);
@@ -55,7 +55,7 @@ export const createLeaderWithId = (req, res) => {
   }
 };
 
-export const updateLeader = (req, res) => {
+module.exports.updateLeader = (req, res) => {
   const { leaderId } = req.params;
 
   const isExist = leaders.find((leader) => leader.id === leaderId);
@@ -76,7 +76,7 @@ export const updateLeader = (req, res) => {
   }
 };
 
-export const deleteLeader = (req, res) => {
+module.exports.deleteLeader = (req, res) => {
   const { leaderId } = req.params;
 
   const isExist = leaders.findIndex((leader) => leader.id === leaderId);

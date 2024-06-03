@@ -1,12 +1,12 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
+  getLeaders,
+  getLeaderById,
   createLeader,
   createLeaderWithId,
-  deleteLeader,
-  getLeaderById,
-  getLeaders,
   updateLeader,
-} from "../services/leaderServices.js";
+  deleteLeader,
+} = require("../services/leaderServices");
 
 const leaderRouter = Router();
 
@@ -22,4 +22,4 @@ leaderRouter.put("/:leaderId", updateLeader);
 
 leaderRouter.delete("/:leaderId", deleteLeader);
 
-export default leaderRouter;
+module.exports = leaderRouter;

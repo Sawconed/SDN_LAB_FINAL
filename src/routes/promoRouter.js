@@ -1,12 +1,12 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
+  getPromotions,
+  getPromotionById,
   createPromotion,
   createPromotionWithId,
-  deletePromotion,
-  getPromotionById,
-  getPromotions,
   updatePromotion,
-} from "../services/promotionServices.js";
+  deletePromotion,
+} = require("../services/promotionServices");
 
 const promotionRouter = Router();
 
@@ -22,4 +22,4 @@ promotionRouter.put("/:promoId", updatePromotion);
 
 promotionRouter.delete("/:promoId", deletePromotion);
 
-export default promotionRouter;
+module.exports = promotionRouter;

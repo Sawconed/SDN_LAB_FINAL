@@ -1,9 +1,9 @@
-import express from "express";
-import dotenv from "dotenv";
-import bodyParser from "body-parser";
-import dishRouter from "./routes/dishRouter.js";
-import promotionRouter from "./routes/promoRouter.js";
-import leaderRouter from "./routes/leaderRouter.js";
+const express = require("express");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
+const dishRouter = require("./routes/dishRouter");
+const promotionRouter = require("./routes/promoRouter");
+const leaderRouter = require("./routes/leaderRouter");
 
 const app = express();
 dotenv.config({ path: ".env.local" });

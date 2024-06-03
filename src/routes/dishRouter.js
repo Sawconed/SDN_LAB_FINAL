@@ -1,12 +1,12 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
+  getDishes,
+  getDishById,
   createDish,
   createDishWithId,
-  deleteDish,
-  getDishById,
-  getDishes,
   updateDish,
-} from "../services/dishServices.js";
+  deleteDish,
+} = require("../services/dishServices");
 
 const dishRouter = Router();
 
@@ -22,4 +22,4 @@ dishRouter.put("/:dishId", updateDish);
 
 dishRouter.delete("/:dishId", deleteDish);
 
-export default dishRouter;
+module.exports = dishRouter;

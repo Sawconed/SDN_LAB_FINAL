@@ -1,4 +1,4 @@
-export let dishes = [
+module.exports.dishes = [
   {
     id: "d0",
     name: "Crepe",
@@ -16,7 +16,7 @@ export let dishes = [
   },
 ];
 
-export let promotions = [
+module.exports.promotions = [
   {
     id: "p0",
     name: "Weekend Grand Buffet",
@@ -34,7 +34,7 @@ export let promotions = [
   },
 ];
 
-export let leaders = [
+module.exports.leaders = [
   {
     id: "l0",
     name: "Peter Pan",

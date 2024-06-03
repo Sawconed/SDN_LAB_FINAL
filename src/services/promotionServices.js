@@ -1,11 +1,11 @@
-import { promotions } from "../publics/data.js";
+const promotions = require("../publics/data").promotions;
 
-export const getPromotions = (req, res) => {
+module.exports.getPromotions = (req, res) => {
   const promotionList = promotions;
   res.status(200).json(promotionList);
 };
 
-export const getPromotionById = (req, res) => {
+module.exports.getPromotionById = (req, res) => {
   const { promoId } = req.params;
 
   const promo = promotions.find((promotion) => promotion.id === promoId);
@@ -17,7 +17,7 @@ export const getPromotionById = (req, res) => {
   }
 };
 
-export const createPromotion = (req, res) => {
+module.exports.createPromotion = (req, res) => {
   const { name, description } = req.body;
 
   const newPromo = {
@@ -31,7 +31,7 @@ export const createPromotion = (req, res) => {
   res.status(201).json(newPromo);
 };
 
-export const createPromotionWithId = (req, res) => {
+module.exports.createPromotionWithId = (req, res) => {
   const { promoId } = req.params;
 
   const isExist = promotions.find((promotion) => promotion.id === promoId);
@@ -55,7 +55,7 @@ export const createPromotionWithId = (req, res) => {
   }
 };
 
-export const updatePromotion = (req, res) => {
+module.exports.updatePromotion = (req, res) => {
   const { promoId } = req.params;
 
   const isExist = promotions.find((promotion) => promotion.id === promoId);
@@ -78,7 +78,7 @@ export const updatePromotion = (req, res) => {
   }
 };
 
-export const deletePromotion = (req, res) => {
+module.exports.deletePromotion = (req, res) => {
   const { promoId } = req.params;
 
   const isExist = promotions.findIndex((promotion) => promotion.id === promoId);
