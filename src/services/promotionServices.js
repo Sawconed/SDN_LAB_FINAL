@@ -1,95 +1,112 @@
-const promotions = require("../publics/data").promotions;
+const Promotion = require("../models/promotions");
 
-module.exports.getPromotions = (req, res) => {
-  const promotionList = promotions;
-  res.status(200).json(promotionList);
+const handleError = (error) => {
+  const errors = { name: "", price: "" };
+
+  if (error.code === 11000) {
+    errors.name = "Promotion with this name already existed";
+
+    return errors;
+  }
+
+  if (error.message.includes("Promotion validation failed")) {
+    Object.values(error.errors).forEach(({ properties }) => {
+      errors[properties.path] = properties.message;
+    });
+  }
+
+  return errors;
 };
 
-module.exports.getPromotionById = (req, res) => {
-  const { promoId } = req.params;
-
-  const promo = promotions.find((promotion) => promotion.id === promoId);
-
-  if (!promo) {
-    res.status(404).json({ message: "Promotion not found" });
-  } else {
-    res.status(200).json(promo);
+module.exports.getPromotions = async (req, res) => {
+  try {
+    const promotions = await Promotion.find();
+    res.status(200).json(promotions);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
-module.exports.createPromotion = (req, res) => {
-  const { name, description } = req.body;
-
-  const newPromo = {
-    id: `p${promotions.length}`,
-    name,
-    description,
-  };
-
-  promotions.push(newPromo);
-
-  res.status(201).json(newPromo);
-};
-
-module.exports.createPromotionWithId = (req, res) => {
+module.exports.getPromotionById = async (req, res) => {
   const { promoId } = req.params;
 
-  const isExist = promotions.find((promotion) => promotion.id === promoId);
+  try {
+    const promotion = await Promotion.findById(promoId);
 
-  if (isExist) {
-    res
-      .status(409)
-      .json({ message: `Promotion with id=${promoId} already exist` });
-  } else {
-    const { name, description } = req.body;
+    if (!promotion) {
+      return res.status(404).json({ message: "Promotion not found" });
+    }
 
-    const newPromo = {
-      id: promoId,
-      name,
-      description,
-    };
-
-    promotions.push(newPromo);
-
-    res.status(201).json(newPromo);
+    res.status(200).json(promotion);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
-module.exports.updatePromotion = (req, res) => {
+module.exports.createPromotion = async (req, res) => {
+  const promotionData = new Promotion(req.body);
+
+  try {
+    const newPromotion = await promotionData.save();
+
+    res.status(201).json(newPromotion);
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(400).json(errors);
+  }
+};
+
+module.exports.createPromotionWithId = async (req, res) => {
   const { promoId } = req.params;
 
-  const isExist = promotions.find((promotion) => promotion.id === promoId);
+  try {
+    const isPromotionExist = await Promotion.findById(promoId);
 
-  if (isExist) {
-    const { name, description } = req.body;
+    if (isPromotionExist) {
+      return res.status(409).json({ message: "Promotion already existed" });
+    }
 
-    promotions.forEach((promotion) => {
-      if (promotion.id === promoId) {
-        promotion.name = name;
-        promotion.description = description;
-      }
+    const promotionData = new Promotion({ _id: promoId, ...req.body });
+    const newPromotion = await promotionData.save();
+
+    res.status(201).json(newPromotion);
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(500).json(errors);
+  }
+};
+
+module.exports.updatePromotion = async (req, res) => {
+  const { promoId } = req.params;
+
+  try {
+    const isPromotionExist = await Promotion.findByIdAndUpdate(promoId, {
+      ...req.body,
     });
 
-    res
-      .status(201)
-      .json({ message: `Promotion updated with id of ${promoId}` });
-  } else {
-    res.status(404).json({ message: "Promotion not found" });
+    if (!isPromotionExist) {
+      return res.status(404).json({ message: "Promotion not found" });
+    }
+
+    res.status(201).json({ message: "Promotion updated" });
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(400).json(errors);
   }
 };
 
-module.exports.deletePromotion = (req, res) => {
+module.exports.deletePromotion = async (req, res) => {
   const { promoId } = req.params;
 
-  const isExist = promotions.findIndex((promotion) => promotion.id === promoId);
+  try {
+    const deletePromotion = await Promotion.findByIdAndDelete(promoId);
 
-  if (isExist !== -1) {
-    promotions.splice(isExist, 1);
+    if (!deletePromotion) {
+      return res.status(404).json({ message: "Promotion not found" });
+    }
 
-    res
-      .status(201)
-      .json({ message: `Promotion deleted with id of ${promoId}` });
-  } else {
-    res.status(404).json({ message: "Promotion not found" });
+    res.status(201).json({ message: "Promotion deleted" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };

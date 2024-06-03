@@ -1,91 +1,112 @@
-const leaders = require("../publics/data").leaders;
+const Leader = require("../models/leaders");
 
-module.exports.getLeaders = (req, res) => {
-  const leaderList = leaders;
-  res.status(200).json(leaderList);
+const handleError = (error) => {
+  const errors = { name: "", designation: "" };
+
+  if (error.code === 11000) {
+    errors.name = "Leader with this name already existed";
+
+    return errors;
+  }
+
+  if (error.message.includes("Leader validation failed")) {
+    Object.values(error.errors).forEach(({ properties }) => {
+      errors[properties.path] = properties.message;
+    });
+  }
+
+  return errors;
 };
 
-module.exports.getLeaderById = (req, res) => {
-  const { leaderId } = req.params;
-
-  const leader = leaders.find((leader) => leader.id === leaderId);
-
-  if (!leader) {
-    res.status(404).json({ message: "Leader not found" });
-  } else {
-    res.status(200).json(leader);
+module.exports.getLeaders = async (req, res) => {
+  try {
+    const leaders = await Leader.find();
+    res.status(200).json(leaders);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
-module.exports.createLeader = (req, res) => {
-  const { name, description } = req.body;
-
-  const newLeader = {
-    id: `l${leaders.length}`,
-    name,
-    description,
-  };
-
-  leaders.push(newLeader);
-
-  res.status(201).json(newLeader);
-};
-
-module.exports.createLeaderWithId = (req, res) => {
+module.exports.getLeaderById = async (req, res) => {
   const { leaderId } = req.params;
 
-  const isExist = leaders.find((leader) => leader.id === leaderId);
+  try {
+    const leader = await Leader.findById(leaderId);
 
-  if (isExist) {
-    res
-      .status(409)
-      .json({ message: `Leader with id=${leaderId} already exist` });
-  } else {
-    const { name, description } = req.body;
+    if (!leader) {
+      return res.status(404).json({ message: "Leader not found" });
+    }
 
-    const newLeader = {
-      id: leaderId,
-      name,
-      description,
-    };
+    res.status(200).json(leader);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
-    leaders.push(newLeader);
+module.exports.createLeader = async (req, res) => {
+  const leaderData = new Leader(req.body);
+
+  try {
+    const newLeader = await leaderData.save();
 
     res.status(201).json(newLeader);
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(400).json(errors);
   }
 };
 
-module.exports.updateLeader = (req, res) => {
+module.exports.createLeaderWithId = async (req, res) => {
   const { leaderId } = req.params;
 
-  const isExist = leaders.find((leader) => leader.id === leaderId);
+  try {
+    const isLeaderExist = await Leader.findById(leaderId);
 
-  if (isExist) {
-    const { name, description } = req.body;
+    if (isLeaderExist) {
+      return res.status(409).json({ message: "Leader already existed" });
+    }
 
-    leaders.forEach((leader) => {
-      if (leader.id === leaderId) {
-        leader.name = name;
-        leader.description = description;
-      }
+    const leaderData = new Leader({ _id: leaderId, ...req.body });
+    const newLeader = await leaderData.save();
+
+    res.status(201).json(newLeader);
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(400).json(errors);
+  }
+};
+
+module.exports.updateLeader = async (req, res) => {
+  const { leaderId } = req.params;
+
+  try {
+    const isLeaderExist = await Leader.findByIdAndUpdate(leaderId, {
+      ...req.body,
     });
 
-    res.status(201).json({ message: `Leader updated with id of ${leaderId}` });
-  } else {
-    res.status(404).json({ message: "Leader not found" });
+    if (!isLeaderExist) {
+      return res.status(404).json({ message: "Leader not found" });
+    }
+
+    res.status(201).json({ message: "Leader updated" });
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(400).json(errors);
   }
 };
 
-module.exports.deleteLeader = (req, res) => {
+module.exports.deleteLeader = async (req, res) => {
   const { leaderId } = req.params;
 
-  const isExist = leaders.findIndex((leader) => leader.id === leaderId);
+  try {
+    const deleteLeader = await Leader.findByIdAndDelete(leaderId);
 
-  if (isExist !== -1) {
-    leaders.splice(isExist, 1);
+    if (!deleteLeader) {
+      return res.status(404).json({ message: "Leader not found" });
+    }
 
-    res.status(201).json({ message: `Leader deleted with id of ${leaderId}` });
-  } else {
-    res.status(404).json({ message: "Leader not found" });
+    res.status(201).json({ message: "Leader deleted" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
