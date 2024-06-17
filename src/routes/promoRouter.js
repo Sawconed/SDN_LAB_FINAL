@@ -7,6 +7,7 @@ const {
   updatePromotion,
   deletePromotion,
 } = require("../services/promotionServices");
+const { verifyOrdinaryUser, verifyAdmin } = require("../authenticate");
 
 const promotionRouter = Router();
 
@@ -14,12 +15,27 @@ promotionRouter.get("/", getPromotions);
 
 promotionRouter.get("/:promoId", getPromotionById);
 
-promotionRouter.post("/", createPromotion);
+promotionRouter.post("/", verifyOrdinaryUser, verifyAdmin, createPromotion);
 
-promotionRouter.post("/:promoId", createPromotionWithId);
+promotionRouter.post(
+  "/:promoId",
+  verifyOrdinaryUser,
+  verifyAdmin,
+  createPromotionWithId
+);
 
-promotionRouter.put("/:promoId", updatePromotion);
+promotionRouter.put(
+  "/:promoId",
+  verifyOrdinaryUser,
+  verifyAdmin,
+  updatePromotion
+);
 
-promotionRouter.delete("/:promoId", deletePromotion);
+promotionRouter.delete(
+  "/:promoId",
+  verifyOrdinaryUser,
+  verifyAdmin,
+  deletePromotion
+);
 
 module.exports = promotionRouter;
