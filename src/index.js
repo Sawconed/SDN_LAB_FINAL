@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const authRouter = require("./routes/authRouter");
 const session = require("express-session");
 const userRouter = require("./routes/userRouter");
+const favoriteRouter = require("./routes/favoriteRouter");
 
 const app = express();
 dotenv.config({ path: ".env.local" });
@@ -38,6 +39,7 @@ mongoose
     app.use("/dishes", dishRouter);
     app.use("/promotions", promotionRouter);
     app.use("/leaders", leaderRouter);
+    app.use("/favorites", favoriteRouter);
   })
   .catch((error) => {
     console.log(error);

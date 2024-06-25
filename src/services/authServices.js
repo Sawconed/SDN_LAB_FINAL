@@ -15,7 +15,6 @@ module.exports.login = async (req, res) => {
     }
 
     req.session.user = { id: user.id, admin: user.admin };
-    console.log(req.session);
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.json({ message: error.message });
@@ -24,6 +23,5 @@ module.exports.login = async (req, res) => {
 
 module.exports.logout = async (req, res) => {
   req.session.destroy();
-  console.log(req.session);
   res.status(200).json({ message: "Logout successful" });
 };
